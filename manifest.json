@@ -1,0 +1,16 @@
+{
+  "name": "Tweets Per Day",
+  "version": "0.2",
+  "description": "Displays # of tweets per day on a users twitter page.",
+  "icons": {
+    "48" : "48.png",
+    "128" : "128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://twitter.com/*"],
+      "js" : ["jquery.js", "contentscript.js"]
+    }
+  ],
+  "run_at": "document_end"
+}
