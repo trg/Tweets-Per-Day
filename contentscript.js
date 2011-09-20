@@ -35,7 +35,7 @@ function calculateTweetsPerDayFromDOM(success, failure) {
     var tweets_per_day_raw = timestamps_count / days_between_first_and_last_post;
     
     var tweets_per_day_formatted = Math.round( tweets_per_day_raw * 10 ) / 10;
-        
+    
     success(tweets_per_day_formatted);
     
 }
@@ -64,6 +64,8 @@ document.body.addEventListener("DOMNodeInserted", function(evt) {
     
     calculateTweetsPerDayFromDOM( function(tweets_per_day) {
         
+        if (isNaN(tweets_per_day)) return;
+        
         // Try to find old dom node and re-use first, otherwise insert.
 
         var existing_dom = $('#tweets-per-day');
@@ -76,7 +78,8 @@ document.body.addEventListener("DOMNodeInserted", function(evt) {
 
             // insert new DOM
             if ($user_stats) {
-                $user_stats.append('<li><a class="user-stats-count" href="http://twitter.com/tweets_per_day"><span id="tweets-per-day">' + tweets_per_day + '</span><span class="user-stats-stat">Tweets/Day</span></a></li>');
+                $('head').append('<style>.user-stats { overflow:visible !important }</style>');
+                $user_stats.append('<li style="width:10px; overflow:visible"><a class="user-stats-count" href="http://twitter.com/tweets_per_day"><span id="tweets-per-day">' + tweets_per_day + '</span><span class="user-stats-stat">Tweets/Day</span></a></li>');
             }
 
         }

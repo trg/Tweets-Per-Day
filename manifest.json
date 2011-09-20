@@ -1,6 +1,6 @@
 {
   "name": "Tweets Per Day",
-  "version": "0.3",
+  "version": "0.4",
   "description": "Displays # of tweets per day on a users twitter page.",
   "icons": {
     "48" : "48.png",
