@@ -1,4 +1,4 @@
-function calculateTweetsPerDayFromDOM() {
+function calculateTweetsPerDayFromDOM(success, failure) {
     
     // Assuming at this point that tweets have loaded.
     
@@ -7,7 +7,7 @@ function calculateTweetsPerDayFromDOM() {
     var timestamps_count = timestamps.length;
     
     if (timestamps_count == 0) {
-        return; // TODO: Failure callback?
+        failure();
     }
     
     var unix_timestamps = [];
@@ -36,33 +36,21 @@ function calculateTweetsPerDayFromDOM() {
     
     var tweets_per_day_formatted = Math.round( tweets_per_day_raw * 10 ) / 10;
         
-    return tweets_per_day_formatted
+    success(tweets_per_day_formatted);
     
 }
 
-TRIED_TO_LOAD_PPD = false;
-USER_STATS = null;
+// jQuery var, 
+$user_stats = null;
 
 // GET the .user-stats object after it's loaded
-document.body.addEventListener("DOMNodeInserted", function(evt) {
-    
-    var node = evt.target;
-    
-    // This is hacky, but basically every time a new node
-    // is inserted, check if we can get the user-stats UL
-    if (!TRIED_TO_LOAD_PPD && node) {
-        
-        var user_stats = $('.user-stats')[0];
-        
-        if (user_stats) {
+document.body.addEventListener("DOMNodeInserted", function(evt) { 
 
-            //TRIED_TO_LOAD_PPD = true;
-            
-            USER_STATS = $(user_stats);
-            
-        }
-        
-    }
+    var user_stats = $('.user-stats')[0];
+    
+    if (user_stats)        
+        $user_stats = $(user_stats);
+
 }, false);
 
 // Listen for when tweets are loaded
@@ -74,26 +62,30 @@ document.body.addEventListener("DOMNodeInserted", function(evt) {
     var node = evt.target;
     if (node.tagName == "LI" || node.tagName == "A" || node.tagName == "SPAN")  return;
     
-    var tweets_per_day = calculateTweetsPerDayFromDOM();
-    
-    if (tweets_per_day === undefined ) return;
-    
-    // Try to find old dom node and re-use first, otherwise insert.
-    
-    var existing_dom = $('#tweets-per-day');
-    
-    if( existing_dom.length > 0 ) {
+    calculateTweetsPerDayFromDOM( function(tweets_per_day) {
         
-        existing_dom.text(tweets_per_day);
-            
-    } else {
-        
-        // insert new DOM
-        if (USER_STATS) {
-            USER_STATS.append('<li><a class="user-stats-count" href="http://twitter.com/tweets_per_day"><span id="tweets-per-day">' + tweets_per_day + '</span><span class="user-stats-stat">Tweets/Day</span></a></li>');
+        // Try to find old dom node and re-use first, otherwise insert.
+
+        var existing_dom = $('#tweets-per-day');
+
+        if( existing_dom.length > 0 ) {
+
+            existing_dom.text(tweets_per_day);
+
+        } else {
+
+            // insert new DOM
+            if ($user_stats) {
+                $user_stats.append('<li><a class="user-stats-count" href="http://twitter.com/tweets_per_day"><span id="tweets-per-day">' + tweets_per_day + '</span><span class="user-stats-stat">Tweets/Day</span></a></li>');
+            }
+
         }
         
-    }
+    }, function() {
+        
+        // Error
+        
+    });
 
 });
 
